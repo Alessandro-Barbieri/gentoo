@@ -1,0 +1,81 @@
+From 3f6991a93379277ba5434b0d363049262e37b963 Mon Sep 17 00:00:00 2001
+From: Michael Fenn <fennm@deshawresearch.com>
+Date: Fri, 10 Jan 2014 15:42:11 -0500
+Subject: [PATCH] hostlist.h and list.h slurm compatiblity macros
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+When compiling pdsh against slurm 2.6 using gcc 4.1 and 4.4 (i.e.
+the el5 and el6 compilers), I get symbol redefinition errors, below.
+I don't get the error with gcc 4.6, but it seems useful to have the
+compilation work on the stock compilers.
+
+This patch adds some tests for the macros that slurm sets on the
+symbols in question, so as to only use the first definition.
+
+gcc -DHAVE_CONFIG_H -I. -I. -I../.. -I../.. -I/usr/include -pthread -O3 -Wall
+-fno-strict-aliasing -MT slurm.lo -MD -MP -MF .deps/slurm.Tpo -c slurm.c
+-o slurm.o
+In file included from slurm.c:50: /usr/include/slurm/slurm.h:663:
+error: redefinition of typedef ‘hostlist_t’ ../../src/common/hostlist.h:59:
+note: previous declaration of ‘hostlist_t’ was here
+/usr/include/slurm/slurm.h:800: error: redefinition of typedef ‘List’
+../../src/common/list.h:58: note: previous declaration of ‘List’ was here
+/usr/include/slurm/slurm.h:805: error: redefinition of typedef ‘ListIterator’
+../../src/common/list.h:63: note: previous declaration of ‘ListIterator’ was
+here /usr/include/slurm/slurm.h:810: error: redefinition of typedef ‘ListDelF’
+../../src/common/list.h:68: note: previous declaration of ‘ListDelF’ was here
+/usr/include/slurm/slurm.h:817: error: redefinition of typedef ‘ListCmpF’
+../../src/common/list.h:75: note: previous declaration of ‘ListCmpF’ was here
+/usr/include/slurm/slurm.h:824: error: redefinition of typedef ‘ListFindF’
+../../src/common/list.h:82: note: previous declaration of ‘ListFindF’ was here
+/usr/include/slurm/slurm.h:830: error: redefinition of typedef ‘ListForF’
+../../src/common/list.h:88: note: previous declaration of ‘ListForF’ was here
+---
+ src/common/hostlist.h | 3 +++
+ src/common/list.h     | 4 +++-
+ 2 files changed, 6 insertions(+), 1 deletion(-)
+
+Signed-off-by: Michael Fenn <michaelfenn87@gmail.com>
+
+diff --git a/src/common/hostlist.h b/src/common/hostlist.h
+index f66cb5c..56f0276 100644
+--- a/src/common/hostlist.h
++++ b/src/common/hostlist.h
+@@ -56,7 +56,10 @@
+  * A hostlist is a list of hostnames optimized for a prefixXXXX style 
+  * naming convention, where XXXX  is a decimal, numeric suffix.
+  */
++#ifndef   __hostlist_t_defined
++#  define __hostlist_t_defined
+ typedef struct hostlist * hostlist_t;
++#endif
+ 
+ /* A hostset is a special case of a hostlist. It:
+  *
+diff --git a/src/common/list.h b/src/common/list.h
+index 2976ea1..8b4fa9e 100644
+--- a/src/common/list.h
++++ b/src/common/list.h
+@@ -55,6 +55,8 @@
+  *  Data Types  *
+  ****************/
+ 
++#ifndef   __list_datatypes_defined
++#  define __list_datatypes_defined
+ typedef struct list * List;
+ /*
+  *  List opaque data type.
+@@ -90,7 +92,7 @@ typedef int (*ListForF) (void *x, void *arg);
+  *  Function prototype for operating on each item in a list.
+  *  Returns less-than-zero on error.
+  */
+-
++#endif
+ 
+ /*******************************
+  *  General-Purpose Functions  *
+-- 
+1.8.3.2
+
