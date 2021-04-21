@@ -38,7 +38,7 @@ RDEPEND+="
 	dev-libs/libgit2:0
 	>=dev-libs/libpcre2-10.23:0=[jit,unicode]
 	dev-libs/mpfr:0=
-	dev-libs/libutf8proc:0=
+	dev-libs/libutf8proc:0=[-cjk]
 	dev-util/patchelf
 	>=net-libs/mbedtls-2.2
 	net-misc/curl[http2,ssh]
