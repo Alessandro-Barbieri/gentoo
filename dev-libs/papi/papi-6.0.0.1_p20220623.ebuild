@@ -3,12 +3,14 @@
 
 EAPI=8
 
+COMMIT="73c4b98d40e3"
+
 inherit autotools fortran-2 toolchain-funcs
 
 DESCRIPTION="Performance Application Programming Interface"
 HOMEPAGE="http://icl.cs.utk.edu/papi/"
-SRC_URI="http://icl.cs.utk.edu/projects/${PN}/downloads/${P}.tar.gz"
-S="${WORKDIR}/${P}/src"
+SRC_URI="https://bitbucket.org/icl/papi/get/${COMMIT}.tar.bz2 -> ${PF}.tar.bz2"
+S="${WORKDIR}/icl-${PN}-${COMMIT}/src"
 
 LICENSE="BSD"
 SLOT="0"
